@@ -42,4 +42,13 @@ module.exports = {
     }
     next();
   },
+  getToken: (request, response, next) => {
+    jwt.verify(request.params.token, process.env.jwtKey, (error, result) => {
+      if (error) {
+        return helperWrapper.response(response, 403, error.message);
+      }
+      request.decodeToken = result;
+      next();
+    });
+  },
 };
