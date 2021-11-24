@@ -19,4 +19,7 @@ Router.patch(
   uploadImage,
   productController.updateProduct
 );
+
+Router.delete("/:id", authMiddleware.isAdmin, productController.deleteProduct);
+
 module.exports = Router;

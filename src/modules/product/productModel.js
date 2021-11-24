@@ -8,7 +8,7 @@ module.exports = {
         data,
         (error, result) => {
           if (!error) {
-            resolve(result);
+            resolve(data);
           } else {
             reject(new Error(`SQL : ${Error.sqlMessage}`));
           }
@@ -23,12 +23,78 @@ module.exports = {
         [data, id],
         (error, result) => {
           if (!error) {
-            resolve(result);
+            const newResult = { id, ...data };
+            resolve(newResult);
           } else {
             reject(new Error(`SQL : ${Error.sqlMessage}`));
           }
         }
       );
       console.log(pp.sql);
+    }),
+
+  getProductById: (data) =>
+    new Promise((resolve, reject) => {
+      const test = connection.query(
+        `SELECT * FROM product WHERE id = ?`,
+        data,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(`SQL : ${Error.sqlMessage}`));
+          }
+        }
+      );
+      console.log(test.sql);
+    }),
+
+  getAllProduct: (search, sortField, sort, limit, offset, category) =>
+    new Promise((resolve, reject) => {
+      const test = connection.query(
+        `SELECT * FROM product WHERE nameProduct LIKE '%${search}%'  ${
+          category ? `AND category = "${category}"` : ""
+        } ORDER BY ${sortField} ${sort} LIMIT ${limit} OFFSET ${offset}`,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(`SQL : ${Error.sqlMessage}`));
+          }
+        }
+      );
+      console.log(test.sql);
+    }),
+
+  deleteProduct: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "DELETE FROM product WHERE id = ?",
+        id,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(`SQL : ${error.sqlMessage}`));
+          }
+        }
+      );
+    }),
+
+  getDataCount: (search, category) =>
+    new Promise((resolve, reject) => {
+      const test = connection.query(
+        `SELECT COUNT(*) as totalData FROM product WHERE nameProduct LIKE '%${search}%'  ${
+          category ? `AND category = "${category}"` : ""
+        }`,
+        (error, result) => {
+          if (!error) {
+            resolve(result[0].totalData);
+          } else {
+            reject(new Error(`SQL : ${Error.sqlMessage}`));
+          }
+        }
+      );
+      console.log(test.sql);
     }),
 };

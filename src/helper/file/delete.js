@@ -1,8 +1,8 @@
 const fs = require("fs");
 
-const deleteFile = (fileName) => {
-  if (fs.existsSync("public/upload/" + fileName)) {
-    fs.unlink("public/upload/" + fileName, (error) => {
+const deleteFile = (filePath) => {
+  if (fs.existsSync(filePath)) {
+    fs.unlink(filePath, (error) => {
       if (error) throw error;
     });
   }
