@@ -272,4 +272,32 @@ module.exports = {
       );
     }
   },
+
+  getListFavorite: async (req, res) => {
+    try {
+      const result = await productModel.getFavoriteList();
+
+      if (result.length < 1) {
+        return helperWrapper.response(
+          res,
+          404,
+          `Can't Find Any Favorite Product`
+        );
+      }
+
+      return helperWrapper.response(
+        res,
+        200,
+        `Success Favorite Product List`,
+        result
+      );
+    } catch {
+      return helperWrapper.response(
+        res,
+        400,
+        `Bad Request ${error.message}`,
+        null
+      );
+    }
+  },
 };

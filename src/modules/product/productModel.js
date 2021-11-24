@@ -97,4 +97,18 @@ module.exports = {
       );
       console.log(test.sql);
     }),
+
+  getFavoriteList: () =>
+    new Promise((resolve, reject) => {
+      const test = connection.query(
+        `SELECT p.id, p.price, p.image, COUNT(td.productId) as totalPurchase FROM transaction as td INNER JOIN product as p ON p.id=td.productId GROUP BY p.id ORDER BY COUNT(td.productId) DESC;`,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(`SQL : ${Error.sqlMessage}`));
+          }
+        }
+      );
+    }),
 };

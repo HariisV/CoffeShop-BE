@@ -5,7 +5,7 @@ const authMiddleware = require("../../middleware/auth");
 const uploadImage = require("../../middleware/uploadProductImage");
 
 Router.get("/", productController.getProduct);
-Router.get("/:id", productController.getProductDetail);
+Router.get("/getDetails/:id", productController.getProductDetail);
 
 Router.post(
   "/",
@@ -21,5 +21,11 @@ Router.patch(
 );
 
 Router.delete("/:id", authMiddleware.isAdmin, productController.deleteProduct);
+
+Router.get(
+  "/favorite",
+  authMiddleware.isAdmin,
+  productController.getListFavorite
+);
 
 module.exports = Router;
