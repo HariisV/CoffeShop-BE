@@ -1,14 +1,13 @@
-const helperWrapper = require("../../helper/wraper");
-const transactionModel = require("./transactionModel");
-const userModel = require("./userModel");
-const authModel = require("../auth/authModel");
-const bcrypt = require("bcrypt");
-const deleteFile = require("../../helper/file/delete");
-require("dotenv").config();
+const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const ejs = require("ejs");
 const htmlPdf = require("html-pdf");
 const moment = require("moment");
+const helperWrapper = require("../../helper/wraper");
+const transactionModel = require("./transactionModel");
+const productModel = require("../product/productModel");
+const promoModel = require("../promo/promoModel");
+require("dotenv").config();
 
 module.exports = {
   getTransactionById: async (req, res) => {
@@ -23,9 +22,16 @@ module.exports = {
       );
     }
   },
-  postTransaction: async (req, res) => {
+  getTransactionByUserId: async (req, res) => {
     try {
-      console.log("GET TRANSACTION BY ID");
+      const { id } = req.params;
+      const result = await transactionModel.getTransactionByUserId(id);
+      return helperWrapper.response(
+        res,
+        200,
+        `Success Get Transaction By User Id`,
+        result
+      );
     } catch (error) {
       return helperWrapper.response(
         res,
@@ -35,12 +41,186 @@ module.exports = {
       );
     }
   },
+  getTransactionDetailByUserId: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await transactionModel.getTransactionDetailByUserId(id);
+      return helperWrapper.response(
+        res,
+        200,
+        `Success Get Transaction Detail By User Id`,
+        result
+      );
+    } catch (error) {
+      return helperWrapper.response(
+        res,
+        400,
+        `Bad Request ${error.message}`,
+        null
+      );
+    }
+  },
+  getTransactionDetailByPending: async (req, res) => {
+    try {
+      const result = await transactionModel.getTransactionDetailByPending();
+      return helperWrapper.response(
+        res,
+        200,
+        `Success Get Transaction Pending`,
+        result
+      );
+    } catch (error) {
+      return helperWrapper.response(
+        res,
+        400,
+        `Bad Request ${error.message}`,
+        null
+      );
+    }
+  },
+
   postTransactionDetail: async (req, res) => {
     try {
       const data = req.body;
       const user = req.decodeToken;
+      let discount = 0;
+      if (
+        !data.totalPayment ||
+        !data.paymentMethod ||
+        !data.alamat ||
+        !data.nameReceiver ||
+        !data.noTelpReceiver
+      ) {
+        return helperWrapper.response(
+          res,
+          400,
+          `Semua Input Harus Diisi`,
+          null
+        );
+      }
+      if (data.voucher_id) {
+        const checkVoucher = await promoModel.getVoucherById(data.voucher_id);
+        if (checkVoucher.length < 1) {
+          return helperWrapper.response(
+            res,
+            400,
+            `Voucher Tidak Ditemukan`,
+            null
+          );
+        } else if (data.totalPayment < checkVoucher[0].minTotalPrice) {
+          return helperWrapper.response(
+            res,
+            400,
+            `Total Payment Kurang untuk menggunakan voucher ini`,
+            null
+          );
+        }
+        discount = (checkVoucher[0].discount / 100) * data.totalPayment;
+        if (discount > checkVoucher[0].maxDiscount) {
+          discount = checkVoucher[0].maxDiscount;
+        }
+      }
+      let total = data.totalPayment - discount;
+      const setDataDetail = {
+        id: uuidv4(),
+        user_id: user.id,
+        voucher_id: data.voucher_id,
+        totalPayment: total,
+        discount: discount,
+        paymentMethod: data.paymentMethod,
+        alamat: data.alamat,
+        nameReceiver: data.nameReceiver,
+        noTelpReceiver: data.noTelpReceiver,
+        statusTransaction: "pending",
+      };
 
-      console.log(data);
+      const postTransactionDetail =
+        await transactionModel.postTransactionDetail(setDataDetail);
+      data.product.forEach(async (item) => {
+        let product = await productModel.getProductById(item.product_id);
+        let priceProduct = product[0].price.split(",");
+        let price = {
+          R: priceProduct[0],
+          L: priceProduct[1],
+          XL: priceProduct[2],
+        };
+        let pricePerQty =
+          item.size == "R" || item.size == "250"
+            ? price.R
+            : item.size == "L" || item.size == "300"
+            ? price.L
+            : item.size == "XL" || item.size == "500"
+            ? price.XL
+            : 0;
+
+        const setDataTransaction = {
+          id: uuidv4(),
+          user_id: user.id,
+          product_id: item.product_id,
+          transactiondetail_id: setDataDetail.id,
+          quantity: item.quantity,
+          size: item.size,
+          totalPayment: pricePerQty * item.quantity,
+        };
+        const result = await transactionModel.postTransaction(
+          setDataTransaction
+        );
+      });
+      return helperWrapper.response(
+        res,
+        200,
+        `Transaction Success, Thanks You !`,
+        setDataDetail
+      );
+    } catch (error) {
+      return helperWrapper.response(
+        res,
+        400,
+        `Bad Request ${error.message}`,
+        null
+      );
+    }
+  },
+  updateTransactionDetail: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      const transactionDetail =
+        await transactionModel.getTransactionHistoryById(id);
+      if (transactionDetail.length < 1) {
+        return helperWrapper.response(res, 400, `Data Tidak Ditemukan`, null);
+      }
+      const setData = {
+        statusTransaction: data.statusTransaction,
+      };
+      // console.log(id, data, setData);
+      await transactionModel.updateTransactionHistory(setData, id);
+      return helperWrapper.response(
+        res,
+        200,
+        `Success Update Status Transaction !`,
+        setData
+      );
+    } catch (error) {
+      return helperWrapper.response(
+        res,
+        400,
+        `Bad Request ${error.message}`,
+        null
+      );
+    }
+  },
+  deleteTransactionDetail: async (req, res) => {
+    try {
+      const { id } = req.params;
+      await transactionModel.deleteTransaction(id);
+      await transactionModel.deleteTransactionDetail(id);
+      return helperWrapper.response(
+        res,
+        200,
+        `Success Delete Transaction !`,
+        null
+      );
     } catch (error) {
       return helperWrapper.response(
         res,
@@ -81,7 +261,6 @@ module.exports = {
 
       // GENERATE PDF
       const dataGenerateTransaction = transactionSuccess[0];
-      console.log(dataGenerateTransaction);
       ejs.renderFile(
         path.resolve("./src/template/generate/transaction.ejs"),
         { dataGenerateTransaction },
