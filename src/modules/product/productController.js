@@ -118,7 +118,8 @@ module.exports = {
         !data.price ||
         !data.category ||
         !data.description ||
-        !data.size
+        !data.size ||
+        !file
       ) {
         return helperWrapper.response(
           res,
