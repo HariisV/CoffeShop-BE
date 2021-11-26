@@ -44,8 +44,6 @@ module.exports = {
 				endDate,
 			} = request.body;
 
-			console.log(request.file);
-
 			const setDataNewPromo = {
 				id: uuid(),
 				name,
@@ -68,6 +66,7 @@ module.exports = {
 					null
 				);
 			}
+
 			const newPromo = await promoModel.createNewPromo(setDataNewPromo);
 			helperResponse.response(
 				response,
@@ -141,7 +140,6 @@ module.exports = {
 			return helperResponse.response(response, 400, `Bad Request : ${error}`);
 		}
 	},
-
 	deletePromo: async function (request, response) {
 		try {
 			const { id } = request.params;
