@@ -285,11 +285,21 @@ module.exports = {
         );
       }
 
+      const newResult = result.map((item) => {
+        const data = {
+          ...item,
+          price: item.price.split(","),
+        };
+        return data;
+      });
+
+      console.log(newResult);
+
       return helperWrapper.response(
         res,
         200,
         `Success Favorite Product List`,
-        result
+        newResult
       );
     } catch {
       return helperWrapper.response(

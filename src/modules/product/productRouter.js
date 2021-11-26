@@ -22,10 +22,6 @@ Router.patch(
 
 Router.delete("/:id", authMiddleware.isAdmin, productController.deleteProduct);
 
-Router.get(
-  "/favorite",
-  authMiddleware.isAdmin,
-  productController.getListFavorite
-);
+Router.get("/favorite", productController.getListFavorite);
 
 module.exports = Router;
