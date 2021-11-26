@@ -33,7 +33,7 @@ module.exports = {
       const data = checkUser[0];
       delete data.password;
       const token = jwt.sign({ ...data }, process.env.jwtKey, {
-        expiresIn: process.env.jwt_expire,
+        expiresIn: 1 * 24 * 60 * 60,
       });
       redis.setex(`accessToken:${token}`, process.env.jwt_expire, token);
       const result = { id: data.id, token };

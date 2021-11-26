@@ -31,6 +31,15 @@ module.exports = {
 			helperResponse.response(response, 400, `Bad Request : ${error}`);
 		}
 	},
+	getPromoById: async function (request, response) {
+		try {
+			let { id } = request.params;
+			const voucher = await promoModel.getVoucherById(id);
+			helperResponse.response(response, 200, "Success Voucher By Id", voucher);
+		} catch (error) {
+			helperResponse.response(response, 400, `Bad Request : ${error}`);
+		}
+	},
 	createPromo: async function (request, response) {
 		try {
 			const {
@@ -43,6 +52,8 @@ module.exports = {
 				startDate,
 				endDate,
 			} = request.body;
+
+			console.log(request.file);
 
 			const setDataNewPromo = {
 				id: uuid(),
@@ -66,7 +77,6 @@ module.exports = {
 					null
 				);
 			}
-
 			const newPromo = await promoModel.createNewPromo(setDataNewPromo);
 			helperResponse.response(
 				response,
@@ -140,6 +150,7 @@ module.exports = {
 			return helperResponse.response(response, 400, `Bad Request : ${error}`);
 		}
 	},
+
 	deletePromo: async function (request, response) {
 		try {
 			const { id } = request.params;
