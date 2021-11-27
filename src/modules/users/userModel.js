@@ -14,6 +14,7 @@ module.exports = {
           }
         }
       );
+      console.log(pp.sql);
     }),
   getUserById: (id) =>
     new Promise((resolve, reject) => {
