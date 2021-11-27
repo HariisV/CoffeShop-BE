@@ -1,26 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-      h1 {
-        text-align: center;
-      }
-      button {
-        text-align: center;
-      }
-      div {
-        text-align: center;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>CLICK BUTTON BELOW TO ACTIVATE YOUR ACCOUNT</h1>
-    <div>
-      <button><a href="{{link}}">Click Here</a></button>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: 'Poppins', sans-serif;
+      margin: auto;
+    }
+
+    .email-main {
+      text-align: center;
+    }
+
+    a {
+      text-decoration: underline;
+      color: #000000 !important;
+      font-weight: bold;
+    }
+
+    .email-activate {
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="email-main">
+    <h3>Hello {{ firstName }} {{ lastName }} 👋🏻, Thank you for registering in Panda Coffee 🐼☕️!</h3>
+    <img src="https://i.postimg.cc/B6m3jmS3/email-background.png" width="340" height="350" alt="Email">
+
+    <p>Hai, Thnkyou for registering in <b>PandaCoffee</b>, and now Click below for further activation.</p>
+
+    <div class="email-activate">
+      <a href="{{ link }}">Activate</a>
     </div>
-  </body>
+  </section>
+</body>
+
 </html>

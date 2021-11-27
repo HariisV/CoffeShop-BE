@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History Transaction</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    table {
+      margin: 50px auto;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    th,
+    td {
+      padding: 12px 42px;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <h2>Report Statistic Transaction.</h2>
+  <table border="1">
+    <tr>
+      <th>
+        <% if (filter === 'DAY') { %>
+        <%= filter  %>
+        <% }else{ %>
+        Date
+        <% } %>
+      </th>
+      <th>Total Payment</th>
+    </tr>
+    <% allData.forEach(function(transaciton) { %>
+    <tr>
+      <% if (filter === 'DAY') { %>
+      <td><%= transaciton.DAY %> </td>
+      <td>Rp.<%= transaciton.total %> </td>
+      <% }else { %>
+      <td><%= transaciton.name %> </td>
+      <td>Rp.<%= transaciton.total %> </td>
+      <% } %>
+    </tr>
+    <% }); %>
+  </table>
+
+</body>
+
+</html>

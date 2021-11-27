@@ -4,7 +4,7 @@ const promoController = require("./promoController");
 const multer = require("../../middleware/uploadVoucheImage");
 const auth = require("../../middleware/auth");
 
-router.get("/", auth.authentication, promoController.getAllPromo);
+router.get("/", promoController.getAllPromo);
 router.post(
 	"/new-promo",
 	auth.authentication,
