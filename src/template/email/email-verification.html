@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-      h1 {
-        text-align: center;
-      }
-      button {
-        text-align: center;
-      }
-      div {
-        text-align: center;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>CLICK BUTTON BELOW TO ACTIVATE YOUR ACCOUNT</h1>
-    <div>
-      <button><a href="{{link}}">Click Here</a></button>
-    </div>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 1rem;
+    }
+
+    .email-verification {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="email-verification">
+    <h2>Hello👋, {{ firstName }} {{ lastName }}</h2>
+    <p></p>
+  </section>
+</body>
+
 </html>

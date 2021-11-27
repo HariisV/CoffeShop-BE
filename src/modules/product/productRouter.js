@@ -8,24 +8,20 @@ Router.get("/", productController.getProduct);
 Router.get("/getDetails/:id", productController.getProductDetail);
 
 Router.post(
-  "/",
-  authMiddleware.isAdmin,
-  uploadImage,
-  productController.createProduct
+	"/",
+	authMiddleware.isAdmin,
+	uploadImage,
+	productController.createProduct
 );
 Router.patch(
-  "/:id",
-  authMiddleware.isAdmin,
-  uploadImage,
-  productController.updateProduct
+	"/:id",
+	authMiddleware.isAdmin,
+	uploadImage,
+	productController.updateProduct
 );
 
 Router.delete("/:id", authMiddleware.isAdmin, productController.deleteProduct);
 
-Router.get(
-  "/favorite",
-  authMiddleware.isAdmin,
-  productController.getListFavorite
-);
+Router.get("/favorite", productController.getListFavorite);
 
 module.exports = Router;
