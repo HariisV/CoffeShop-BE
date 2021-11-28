@@ -32,11 +32,34 @@ module.exports = {
 	getTransactionDetailByPending: (id) =>
 		new Promise((resolve, reject) => {
 			connection.query(
-				"SELECT * FROM transaction_detail WHERE statusTransaction = 'pending'",
+				"SELECT product.nameProduct, product.image, transaction_detail.user_id,transaction_detail.id,transaction_detail.paymentMethod,transaction_detail.alamat,transaction_detail.nameReceiver,transaction_detail.noTelpReceiver,transaction_detail.totalPayment,transaction_detail.discount, transaction.product_id,transaction.quantity,transaction.size, transaction.totalPayment as totalItemPayment FROM transaction_detail JOIN transaction ON transaction_detail.id = transaction.transactiondetail_id JOIN product on transaction.product_id = product.id WHERE transaction_detail.statusTransaction = 'pending'",
 				id,
 				(error, results) => {
 					if (!error) {
-						resolve(results);
+						const newResult = [];
+						results.forEach((item) => {
+							newResult.push({
+								product: [
+									{
+										nameProduct: item.nameProduct,
+										image: item.image,
+										size: item.size,
+										quantity: item.quantity,
+										totalItemPayment: item.totalItemPayment,
+									},
+								],
+								paymentMethod: item.paymentMethod,
+								alamat: item.alamat,
+								nameReceiver: item.nameReceiver,
+								discount: item.discount,
+								id: item.id,
+								noTelpReceiver: item.noTelpReceiver,
+								totalPayment: item.totalPayment,
+								user_id: item.user_id,
+								product_id: item.product_id,
+							});
+						});
+						resolve(newResult);
 					} else {
 						new Error(reject(`Message : ${error.message}`));
 					}

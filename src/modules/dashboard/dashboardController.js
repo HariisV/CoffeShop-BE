@@ -103,44 +103,46 @@ module.exports = {
 					return allData.push({ name: element, total: result });
 				});
 
-				ejs.renderFile(
-					path.join(__dirname, "../../template/generate", "transaction.ejs"),
-					{ allData, filter: filter },
-					(error, results) => {
-						if (!error) {
-							let options = {
-								height: "11.25in",
-								width: "10.5in",
-							};
-							htmlPdf
-								.create(results, options)
-								.toFile(
-									path.resolve(`./public/upload/generate/${fileName}`),
-									(error, results) => {
-										if (error) {
-											return helperWrapper.response(
-												res,
-												400,
-												error.message,
-												null
-											);
-										} else {
-											console.log("data bulan =>", allData);
-											return helperWrapper.response(
-												res,
-												200,
-												"Success Get Dashboard By Month.",
-												{
-													allData,
-													redirect_url: `http://localhost:3001/upload/generate/${fileName}`,
-												}
-											);
+				setTimeout(() => {
+					ejs.renderFile(
+						path.join(__dirname, "../../template/generate", "transaction.ejs"),
+						{ allData, filter: filter },
+						(error, results) => {
+							if (!error) {
+								let options = {
+									height: "11.25in",
+									width: "10.5in",
+								};
+								htmlPdf
+									.create(results, options)
+									.toFile(
+										path.resolve(`./public/upload/generate/${fileName}`),
+										(error, results) => {
+											if (error) {
+												return helperWrapper.response(
+													res,
+													400,
+													error.message,
+													null
+												);
+											} else {
+												console.log("data bulan =>", allData);
+												return helperWrapper.response(
+													res,
+													200,
+													"Success Get Dashboard By Month.",
+													{
+														allData,
+														redirect_url: `http://localhost:3001/upload/generate/${fileName}`,
+													}
+												);
+											}
 										}
-									}
-								);
+									);
+							}
 						}
-					}
-				);
+					);
+				}, 1500);
 			} else if (filter === "DAY") {
 				const date = new Date();
 				function daysInMonth(month, year) {
