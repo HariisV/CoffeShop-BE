@@ -236,7 +236,7 @@ module.exports = {
   },
   refreshToken: async (req, res) => {
     try {
-      // console.log(req.body);
+      let token = req.headers.authorization;
       const { refreshToken } = req.body;
       // PROSES PENGECEKAN REFRESH TOKEN APAKAH BISA DIGUNAKAN ATAU TIDAK
       redis.get(`refreshToken:${refreshToken}`, (error, result) => {
@@ -259,6 +259,8 @@ module.exports = {
           const newRefreshToken = jwt.sign(result, process.env.jwtKey, {
             expiresIn: "24h",
           });
+
+          redis.setex(`accessToken:${token}`, 3600 * 24, token);
           redis.setex(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
           return helperWrapper.response(res, 200, "Success Refresh Token !", {
             id: result.id,

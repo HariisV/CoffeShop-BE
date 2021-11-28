@@ -8,8 +8,10 @@ require("dotenv").config();
 module.exports = {
   getUserById: async (req, res) => {
     try {
-      const user = req.decodeToken;
-      const rest = await userModel.getUserById(user.id);
+      const user = req.params.id;
+      // console.log(req.params.id);
+      // console.log(user);
+      const rest = await userModel.getUserById(user);
       return helperWrapper.response(res, 200, `Success Get User`, rest);
     } catch (error) {
       return helperWrapper.response(
