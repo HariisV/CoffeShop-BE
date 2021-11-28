@@ -7,6 +7,10 @@ const helperWrapper = require("../../helper/wraper");
 const transactionModel = require("./transactionModel");
 const productModel = require("../product/productModel");
 const promoModel = require("../promo/promoModel");
+const {
+	createTransaction,
+	notificationTransaction,
+} = require("../../helper/midtrans");
 require("dotenv").config();
 
 module.exports = {
@@ -78,7 +82,6 @@ module.exports = {
 			);
 		}
 	},
-
 	postTransactionDetail: async (req, res) => {
 		try {
 			const data = req.body;
@@ -131,11 +134,12 @@ module.exports = {
 				alamat: data.alamat,
 				nameReceiver: data.nameReceiver,
 				noTelpReceiver: data.noTelpReceiver,
-				statusTransaction: "pending",
+				status: "pending",
 			};
 
 			const postTransactionDetail =
 				await transactionModel.postTransactionDetail(setDataDetail);
+
 			data.product.forEach(async (item) => {
 				let product = await productModel.getProductById(item.product_id);
 				let priceProduct = product[0].price.split(",");
@@ -162,16 +166,15 @@ module.exports = {
 					size: item.size,
 					totalPayment: pricePerQty * item.quantity,
 				};
-				const result = await transactionModel.postTransaction(
-					setDataTransaction
-				);
+				await transactionModel.postTransaction(setDataTransaction);
 			});
-			return helperWrapper.response(
-				res,
-				200,
-				`Transaction Success, Thanks You !`,
-				setDataDetail
+			const midtransNotif = await createTransaction(
+				setDataDetail.id,
+				setDataDetail.totalPayment
 			);
+			return helperWrapper.response(res, 200, "Please complete your payment.", {
+				redirectUrl: midtransNotif,
+			});
 		} catch (error) {
 			return helperWrapper.response(
 				res,
@@ -191,7 +194,7 @@ module.exports = {
 				return helperWrapper.response(res, 400, `Data Tidak Ditemukan`, null);
 			}
 			const setData = {
-				statusTransaction: data.statusTransaction,
+				status: data.statusTransaction,
 			};
 			// console.log(id, data, setData);
 			await transactionModel.updateTransactionHistory(setData, id);
@@ -299,6 +302,64 @@ module.exports = {
 			);
 		} catch (error) {
 			return helperWrapper.response(response, 400, `Bad Request : ${error}`);
+		}
+	},
+	postTrasnactionNotifMidtrans: async (request, response) => {
+		try {
+			const notifMidtrans = await notificationTransaction(request.body);
+			const { order_id, transactionStatus, fraudStatus } = notifMidtrans;
+
+			if (transactionStatus === "capture") {
+				if (fraudStatus === "challenge") {
+					await transactionModel.updateStatusTransaction({
+						status: "challange",
+						id: request.body.order_id,
+						updatedAt: new Date(),
+					});
+				} else if (fraudStatus === "accept") {
+					await transactionModel.updateStatusTransaction({
+						status: "success",
+						id: request.body.order_id,
+						updatedAt: new Date(),
+					});
+				}
+			} else if (transactionStatus === "settlement") {
+				await transactionModel.updateStatusTransaction({
+					status: "success",
+					id: request.body.order_id,
+					updatedAt: new Date(),
+				});
+			} else if (transactionStatus === "deny") {
+				await transactionModel.updateStatusTransaction({
+					status: "success",
+					id: request.body.order_id,
+					updatedAt: new Date(),
+				});
+			} else if (
+				transactionStatus === "cancel" ||
+				transactionStatus === "expire"
+			) {
+				await transactionModel.updateStatusTransaction({
+					status: "failure",
+					id: request.body.order_id,
+					udpatedAt: new Date(),
+				});
+			} else if (transactionStatus === "pending") {
+				await transactionModel.updateStatusTransaction({
+					status: "pending",
+					id: request.body.order_id,
+					udpatedAt: new Date(),
+				});
+			}
+
+			return helperWrapper.response(
+				response,
+				200,
+				"Transaction Successfully.",
+				notifMidtrans
+			);
+		} catch (error) {
+			helperWrapper.response(response, 400, `Bad Request : ${error}`);
 		}
 	},
 };
