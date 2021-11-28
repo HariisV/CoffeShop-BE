@@ -8,6 +8,7 @@ Router.post("/login", authController.login);
 Router.post("/register", authController.register);
 Router.get("/activation/:id", authController.verifEmail);
 Router.post("/forgot-password", authController.forgotPassword);
+Router.post("/refresh-token", authController.refreshToken);
 Router.patch(
   "/reset-password/:token",
   authMiddleware.getToken,

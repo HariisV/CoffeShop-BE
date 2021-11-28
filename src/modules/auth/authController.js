@@ -34,9 +34,13 @@ module.exports = {
 			delete data.password;
 			const token = jwt.sign({ ...data }, process.env.jwtKey, {
 				expiresIn: 1 * 24 * 60 * 60,
+				// expiresIn: 10,
+			});
+			const refreshToken = jwt.sign({ ...data }, process.env.jwtKey, {
+				expiresIn: 7 * 24 * 60 * 60,
 			});
 			redis.setex(`accessToken:${token}`, process.env.jwt_expire, token);
-			const result = { id: data.id, token };
+			const result = { id: data.id, token, refreshToken };
 
 			return helperWrapper.response(res, 200, "Success login", result);
 		} catch (error) {
@@ -227,6 +231,50 @@ module.exports = {
 				res,
 				400,
 				`Bad Request ${error.message}`,
+				null
+			);
+		}
+	},
+	refreshToken: async (req, res) => {
+		try {
+			let token = req.headers.authorization;
+			const { refreshToken } = req.body;
+			// PROSES PENGECEKAN REFRESH TOKEN APAKAH BISA DIGUNAKAN ATAU TIDAK
+			redis.get(`refreshToken:${refreshToken}`, (error, result) => {
+				if (!error && result !== null) {
+					return helperWrapper.response(
+						res,
+						403,
+						"Your refresh token cannot be use"
+					);
+				}
+				jwt.verify(refreshToken, process.env.jwtKey, (error, result) => {
+					if (error) {
+						return helperWrapper.response(res, 403, error.message);
+					}
+					delete result.iat;
+					delete result.exp;
+					const token = jwt.sign(result, process.env.jwtKey, {
+						expiresIn: "1h",
+					});
+					const newRefreshToken = jwt.sign(result, process.env.jwtKey, {
+						expiresIn: "24h",
+					});
+
+					redis.setex(`accessToken:${token}`, 3600 * 24, token);
+					redis.setex(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
+					return helperWrapper.response(res, 200, "Success Refresh Token !", {
+						id: result.id,
+						token,
+						refreshToken: newRefreshToken,
+					});
+				});
+			});
+		} catch (error) {
+			return helperWrapper.response(
+				res,
+				400,
+				`Bad request (${error.message})`,
 				null
 			);
 		}

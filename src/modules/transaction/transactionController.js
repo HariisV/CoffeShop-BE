@@ -12,6 +12,9 @@ const {
 	notificationTransaction,
 } = require("../../helper/midtrans");
 require("dotenv").config();
+function rand(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 module.exports = {
 	getTransactionById: async (req, res) => {
@@ -125,7 +128,7 @@ module.exports = {
 			}
 			let total = data.totalPayment - discount;
 			const setDataDetail = {
-				id: uuidv4(),
+				id: `pd-${rand(1000, 9999)}${rand(10, 99)}${rand(10, 99)}`,
 				user_id: user.id,
 				voucher_id: data.voucher_id,
 				totalPayment: total,
