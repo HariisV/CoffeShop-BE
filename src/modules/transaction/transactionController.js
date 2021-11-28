@@ -313,26 +313,26 @@ module.exports = {
 				if (fraudStatus === "challenge") {
 					await transactionModel.updateStatusTransaction({
 						status: "challange",
-						id: request.body.order_id,
+						id: order_id,
 						updatedAt: new Date(),
 					});
 				} else if (fraudStatus === "accept") {
 					await transactionModel.updateStatusTransaction({
 						status: "success",
-						id: request.body.order_id,
+						id: order_id,
 						updatedAt: new Date(),
 					});
 				}
 			} else if (transactionStatus === "settlement") {
 				await transactionModel.updateStatusTransaction({
 					status: "success",
-					id: request.body.order_id,
+					id: order_id,
 					updatedAt: new Date(),
 				});
 			} else if (transactionStatus === "deny") {
 				await transactionModel.updateStatusTransaction({
 					status: "success",
-					id: request.body.order_id,
+					id: order_id,
 					updatedAt: new Date(),
 				});
 			} else if (
@@ -341,13 +341,13 @@ module.exports = {
 			) {
 				await transactionModel.updateStatusTransaction({
 					status: "failure",
-					id: request.body.order_id,
+					id: order_id,
 					udpatedAt: new Date(),
 				});
 			} else if (transactionStatus === "pending") {
 				await transactionModel.updateStatusTransaction({
 					status: "pending",
-					id: request.body.order_id,
+					id: order_id,
 					udpatedAt: new Date(),
 				});
 			}

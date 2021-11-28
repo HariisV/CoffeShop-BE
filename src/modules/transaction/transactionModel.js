@@ -142,9 +142,9 @@ module.exports = {
 			);
 			console.log(pp.sql);
 		}),
-	updateStatusTransaction: (status, id) =>
+	updateStatusTransaction: (status) =>
 		new Promise((resolve, reject) => {
-			const query = connection.query(
+			connection.query(
 				`UPDATE transaction_detail SET statusTransaction = '${status.status}' WHERE id = '${status.id}'`,
 				(error, results) => {
 					if (!error) {
@@ -154,6 +154,5 @@ module.exports = {
 					}
 				}
 			);
-			console.log(query.sql);
 		}),
 };

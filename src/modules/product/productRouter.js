@@ -24,7 +24,6 @@ Router.delete("/:id", authMiddleware.isAdmin, productController.deleteProduct);
 
 Router.get(
   "/favorite",
-  authMiddleware.isAdmin,
   productController.getListFavorite
 );
 
