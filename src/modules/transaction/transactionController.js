@@ -63,11 +63,31 @@ module.exports = {
   getTransactionDetailByPending: async (req, res) => {
     try {
       const result = await transactionModel.getTransactionDetailByPending();
+
+      var output = [];
+
+      result.forEach(function (item) {
+        var existing = output.filter(function (v, i) {
+          return v.id == item.id;
+        });
+        if (existing.length) {
+          var existingIndex = output.indexOf(existing[0]);
+          output[existingIndex].product = output[existingIndex].product.concat(
+            item.product
+          );
+        } else {
+          if (typeof item.product == "string") item.product = [item.product];
+          output.push(item);
+        }
+      });
+
+      console.log(output);
+
       return helperWrapper.response(
         res,
         200,
         `Success Get Transaction Pending`,
-        result
+        output
       );
     } catch (error) {
       return helperWrapper.response(
