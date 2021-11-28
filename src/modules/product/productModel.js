@@ -101,7 +101,7 @@ module.exports = {
   getFavoriteList: () =>
     new Promise((resolve, reject) => {
       const test = connection.query(
-        `SELECT p.id, p.price, p.image, COUNT(td.productId) as totalPurchase FROM transaction as td INNER JOIN product as p ON p.id=td.productId GROUP BY p.id ORDER BY COUNT(td.productId) DESC;`,
+        `SELECT p.id, p.price, p.image, COUNT(td.product_id) as totalPurchase FROM transaction as td INNER JOIN product as p ON p.id=td.product_id GROUP BY p.id ORDER BY COUNT(td.product_id) DESC;`,
         (error, result) => {
           if (!error) {
             resolve(result);

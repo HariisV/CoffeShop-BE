@@ -292,7 +292,7 @@ module.exports = {
         `Success Favorite Product List`,
         result
       );
-    } catch {
+    } catch (error) {
       return helperWrapper.response(
         res,
         400,
