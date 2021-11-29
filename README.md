@@ -43,20 +43,20 @@ Tuntutan masyarakat yang menginginkan kemudahan dalam setiap aktivitas online, o
 
 ## Teknologi Yang Digunakan
 
-- Node Js (https://nodejs.org/en/docs/)
-- Express Js (https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction)
-- Redis (https://redis.io/documentation)
-- MySql (https://dev.mysql.com/doc/)
-- Json Web Token (https://www.npmjs.com/package/jsonwebtoken)
-- Postman API testing (https://www.postman.com/api-documentation-tool/)
+- [Node Js](https://nodejs.org/en/docs/)
+- [Express Js](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction)
+- [Redis](https://redis.io/documentation)
+- [MySql](https://dev.mysql.com/doc/)
+- [Json Web Token](https://www.npmjs.com/package/jsonwebtoken)
+- [Postman API testing](https://www.postman.com/api-documentation-tool/)
 
 ## Daftar Anggota
 
-- Haris Wahyudi (https://github.com/HariisV)
-- Rino Satya Putra (https://github.com/riyaraa)
-- Wafi Pandega (https://github.com/wafidega)
-- Moh. Syahrul Aziz Imastara (https://github.com/AzizImastara)
-- Andreas Kurniawan (https://github.com/AndreasCKurniawan)
+- [Haris Wahyudi](https://github.com/HariisV)
+- [Rino Satya Putra](https://github.com/riyaraa)
+- [Wafi Pandega](https://github.com/wafidega)
+- [Moh. Syahrul Aziz Imastara](https://github.com/AzizImastara)
+- [Andreas Kurniawan](https://github.com/AndreasCKurniawan)
 
 ## License
 
