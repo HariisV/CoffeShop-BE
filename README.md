@@ -20,11 +20,11 @@
 <br />
 <div align="center">
   </a>
-  <h3 align="center">PANDA COFFEE BERDIRI SEJAK ENGKAU MENDUA</h3>
+  <h3 align="center">Backend Coffe Shop</h3>
 </div>
 
 <p align="center">
-  <img src='https://i.postimg.cc/bJWkbY8F/panda-coffe.png' border='0' alt='panda-coffe'/>
+  <img src='https://i.postimg.cc/wx0ksgcM/Screenshot-1.png' border='0' alt='panda-coffe'/>
 </p>
 
 <!-- ABOUT THE PROJECT -->
@@ -41,7 +41,7 @@ Tuntutan masyarakat yang menginginkan kemudahan dalam setiap aktivitas online, o
 3. Npm install
 4. Npm run dev
 
-# Teknologi Yang Digunakan
+## Teknologi Yang Digunakan
 
 - Node Js (https://nodejs.org/en/docs/)
 - Express Js (https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction)
@@ -50,7 +50,13 @@ Tuntutan masyarakat yang menginginkan kemudahan dalam setiap aktivitas online, o
 - Json Web Token (https://www.npmjs.com/package/jsonwebtoken)
 - Postman API testing (https://www.postman.com/api-documentation-tool/)
 
+## Daftar Anggota
 
+- Haris Wahyudi (https://github.com/HariisV)
+- Rino Satya Putra (https://github.com/riyaraa)
+- Wafi Pandega (https://github.com/wafidega)
+- Moh. Syahrul Aziz Imastara (https://github.com/AzizImastara)
+- Andreas Kurniawan (https://github.com/AndreasCKurniawan)
 
 ## License
 
