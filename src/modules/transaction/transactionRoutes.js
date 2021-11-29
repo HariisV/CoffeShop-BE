@@ -31,6 +31,11 @@ Router.post(
 	authMiddleware.authentication,
 	transactionController.postTransactionDetail
 );
+
+Router.post(
+	"/midtrans-notification",
+	transactionController.postTrasnactionNotifMidtrans
+);
 Router.patch(
 	"/detail/:id",
 	authMiddleware.authentication,
@@ -42,8 +47,4 @@ Router.delete(
 	transactionController.deleteTransactionDetail
 );
 
-Router.post(
-	"/midtrans-notification",
-	transactionController.postTrasnactionNotifMidtrans
-);
 module.exports = Router;

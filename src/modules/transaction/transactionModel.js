@@ -110,7 +110,7 @@ module.exports = {
 		}),
 	postTransactionDetail: (data) =>
 		new Promise((resolve, reject) => {
-			const query = connection.query(
+			connection.query(
 				"INSERT INTO transaction_detail SET ?",
 				data,
 				(error, results) => {
@@ -121,7 +121,6 @@ module.exports = {
 					}
 				}
 			);
-			console.log(query.sql);
 		}),
 	updateTransactionHistory: (data, id) =>
 		new Promise((resolve, reject) => {
@@ -164,18 +163,5 @@ module.exports = {
 				}
 			);
 			console.log(pp.sql);
-		}),
-	updateStatusTransaction: (status) =>
-		new Promise((resolve, reject) => {
-			connection.query(
-				`UPDATE transaction_detail SET statusTransaction = '${status.status}' WHERE id = '${status.id}'`,
-				(error, results) => {
-					if (!error) {
-						resolve(null);
-					} else {
-						reject(new Error(`Message : ${error.message}`));
-					}
-				}
-			);
 		}),
 };
