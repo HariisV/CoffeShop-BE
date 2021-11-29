@@ -44,7 +44,6 @@ Router.delete(
 
 Router.post(
 	"/midtrans-notification",
-	authMiddleware.authentication,
 	transactionController.postTrasnactionNotifMidtrans
 );
 module.exports = Router;
