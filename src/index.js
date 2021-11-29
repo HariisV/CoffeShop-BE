@@ -26,9 +26,7 @@ app.use(bodyParser.json());
 
 app.use("/", routeNavigation);
 app.use("/*", (request, response) => {
-	response.status(404).send("Path not found !");
+  response.status(404).send("Path not found !");
 });
 
-app.listen(port, () => {
-	console.log(`Express app is linsten on port ${port}!`);
-});
+app.listen(process.env.PORT || 3001);
