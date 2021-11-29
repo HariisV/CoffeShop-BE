@@ -4,7 +4,7 @@ const userMiddleware = require("../../middleware/uploadUserImage");
 const userController = require("./userController");
 const authMiddleware = require("../../middleware/auth");
 
-Router.get("/:id", authMiddleware.authentication, userController.getUserById);
+Router.get("/:id", userController.getUserById);
 Router.patch(
   "/update",
   authMiddleware.authentication,

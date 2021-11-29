@@ -19,6 +19,7 @@ module.exports = {
         return helperWrapper.response(res, 403, error.message);
       } else {
         redis.get(`accessToken:${token}`, (error, result) => {
+          console.log(token);
           if (!error && result != null) {
             req.decodeToken = resultToken;
             next();
@@ -26,7 +27,8 @@ module.exports = {
             return helperWrapper.response(
               res,
               403,
-              "Your token is destroyed please login again !"
+              token
+              // "Your token is destroyed please login again !"
             );
           }
         });

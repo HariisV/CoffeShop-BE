@@ -8,289 +8,292 @@ const sendMail = require("../../helper/email");
 require("dotenv").config();
 
 module.exports = {
-  login: async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      const checkUser = await authModel.checkUserByEmail(email);
+	login: async (req, res) => {
+		try {
+			const { email, password } = req.body;
+			const checkUser = await authModel.checkUserByEmail(email);
 
-      if (checkUser.length < 1) {
-        return helperWrapper.response(res, 400, "Your Email Is Wrong");
-      }
-      if (checkUser[0].isActive !== 1) {
-        return helperWrapper.response(
-          res,
-          400,
-          "Before Login, Verify Your Email"
-        );
-      }
-      const checkPassword = await bcrypt.compare(
-        password,
-        checkUser[0].password
-      );
-      if (!checkPassword) {
-        return helperWrapper.response(res, 400, "Your Password Wrong");
-      }
-      const data = checkUser[0];
-      delete data.password;
-      const token = jwt.sign({ ...data }, process.env.jwtKey, {
-        // expiresIn: 1 * 24 * 60 * 60,
-        expiresIn: 10,
-      });
-      const refreshToken = jwt.sign({ ...data }, process.env.jwtKey, {
-        expiresIn: 7 * 24 * 60 * 60,
-      });
-      redis.setex(`accessToken:${token}`, process.env.jwt_expire, token);
-      const result = { id: data.id, token, refreshToken };
+			if (checkUser.length < 1) {
+				return helperWrapper.response(res, 400, "Your Email Is Wrong");
+			}
+			if (checkUser[0].isActive !== 1) {
+				return helperWrapper.response(
+					res,
+					400,
+					"Before Login, Verify Your Email"
+				);
+			}
+			const checkPassword = await bcrypt.compare(
+				password,
+				checkUser[0].password
+			);
+			if (!checkPassword) {
+				return helperWrapper.response(res, 400, "Your Password Wrong");
+			}
+			const data = checkUser[0];
+			delete data.password;
+			const token = jwt.sign({ ...data }, process.env.jwtKey, {
+				expiresIn: 1 * 24 * 60 * 60,
+				// expiresIn: 10,
+			});
+			const refreshToken = jwt.sign({ ...data }, process.env.jwtKey, {
+				expiresIn: 7 * 24 * 60 * 60,
+			});
+			redis.setex(`accessToken:${token}`, process.env.jwt_expire, token);
+			const result = { id: data.id, token, refreshToken };
 
-      return helperWrapper.response(res, 200, "Success login", result);
-    } catch (error) {
-      return helperWrapper.response(
-        res,
-        400,
-        `Bad Request ${error.message}`,
-        null
-      );
-    }
-  },
-  register: async (request, response) => {
-    try {
-      let { firstName, lastName, email, password, phoneNumber } = request.body;
-      if (!firstName || !lastName || !email || !password || !phoneNumber) {
-        return helperWrapper.response(
-          response,
-          400,
-          `Please Fill First Name, Last Name, Email, Password And Phone Number`
-        );
-      }
-      const cekGmail = email.search("@gmail.com");
-      if (cekGmail == -1) {
-        return helperWrapper.response(response, 403, "Please Only Use Gmail");
-      }
-      const cekUser = await authModel.checkUserByEmail(email);
-      if (cekUser.length > 0) {
-        return helperWrapper.response(
-          response,
-          400,
-          "That Email Already Had an Account"
-        );
-      }
-      if (password.length < 8) {
-        return helperWrapper.response(
-          response,
-          400,
-          "The minimum length of password is 8 character"
-        );
-      }
-      const hashPass = await bcrypt.hash(password, 10);
+			return helperWrapper.response(res, 200, "Success login", result);
+		} catch (error) {
+			return helperWrapper.response(
+				res,
+				400,
+				`Bad Request ${error.message}`,
+				null
+			);
+		}
+	},
+	register: async (request, response) => {
+		try {
+			let { firstName, lastName, email, password, phoneNumber } = request.body;
+			if (!firstName || !lastName || !email || !password || !phoneNumber) {
+				return helperWrapper.response(
+					response,
+					400,
+					`Please Fill First Name, Last Name, Email, Password And Phone Number`
+				);
+			}
+			const cekGmail = email.search("@gmail.com");
+			if (cekGmail == -1) {
+				return helperWrapper.response(response, 403, "Please Only Use Gmail");
+			}
+			const cekUser = await authModel.checkUserByEmail(email);
+			if (cekUser.length > 0) {
+				return helperWrapper.response(
+					response,
+					400,
+					"That Email Already Had an Account"
+				);
+			}
+			if (password.length < 8) {
+				return helperWrapper.response(
+					response,
+					400,
+					"The minimum length of password is 8 character"
+				);
+			}
+			const hashPass = await bcrypt.hash(password, 10);
 
-      const setPostData = {
-        id: uuidv4(),
-        firstName,
-        lastName,
-        phoneNumber,
-        email,
-        password: hashPass,
-        role: "user",
-      };
-      let result = await authModel.register(setPostData);
+			const setPostData = {
+				id: uuidv4(),
+				firstName,
+				lastName,
+				phoneNumber,
+				email,
+				password: hashPass,
+				role: "user",
+			};
+			let result = await authModel.register(setPostData);
 
-      const setDataEmail = {
-        to: email,
-        subject: "Verification Email",
-        template: "email-verification",
-        data: {
-          firstName,
-          lastName,
-          id: result.id,
-          link: `${process.env.URL_BACKEND}/auth/activation/${result.id}`,
-        },
-      };
-      sendMail(setDataEmail);
+			const setDataEmail = {
+				to: email,
+				subject: "Verification Email",
+				template: "email-verification",
+				data: {
+					firstName,
+					lastName,
+					id: result.id,
+					link: `${process.env.URL_BACKEND}/auth/activation/${result.id}`,
+				},
+			};
+			sendMail(setDataEmail);
 
-      return helperWrapper.response(
-        response,
-        200,
-        "Success Create Account, Check Your Email To Activation Your Email",
-        result
-      );
-    } catch (error) {
-      return helperWrapper.response(
-        response,
-        400,
-        `Bad Request ${error.message}`,
-        null
-      );
-    }
-  },
-  verifEmail: async (req, res) => {
-    try {
-      const id = req.params.id;
-      const cekUser = await authModel.checkUserById(id);
-      if (cekUser.length < 1) {
-        return helperWrapper.response(res, 400, "User not found");
-      }
-      // 1 = AKTIF | 0 = NONAKTIF
-      const setPostData = {
-        isActive: 1,
-      };
-      let result = await authModel.updatedUser(setPostData, id);
-      return helperWrapper.response(
-        res,
-        200,
-        "Success Activated Account, Login Now",
-        result
-      );
-    } catch (error) {
-      return helperWrapper.response(
-        res,
-        400,
-        `Bad Request ${error.message}`,
-        null
-      );
-    }
-  },
-  forgotPassword: async (req, res) => {
-    try {
-      const { email } = req.body;
-      const checkUser = await authModel.checkUserByEmail(email);
-      if (checkUser.length < 1) {
-        return helperWrapper.response(
-          res,
-          400,
-          `User With Email : ${email} Not Found`
-        );
-      }
-      const data = { email: checkUser[0].email, id: checkUser[0].id };
-      const token = jwt.sign(data, process.env.jwtKey, {
-        expiresIn: process.env.jwt_expire,
-      });
+			return helperWrapper.response(
+				response,
+				200,
+				"Success Create Account, Check Your Email To Activation Your Email",
+				result
+			);
+		} catch (error) {
+			return helperWrapper.response(
+				response,
+				400,
+				`Bad Request ${error.message}`,
+				null
+			);
+		}
+	},
+	verifEmail: async (req, res) => {
+		try {
+			const id = req.params.id;
+			const cekUser = await authModel.checkUserById(id);
+			if (cekUser.length < 1) {
+				return helperWrapper.response(res, 400, "User not found");
+			}
+			// 1 = AKTIF | 0 = NONAKTIF
+			const setPostData = {
+				isActive: 1,
+			};
+			let result = await authModel.updatedUser(setPostData, id);
+			res.render("activateEmail/index.ejs");
+			// return helperWrapper.response(
+			//   res,
+			//   200,
+			//   "Success Activated Account, Login Now",
+			//   result
+			// );
+		} catch (error) {
+			return helperWrapper.response(
+				res,
+				400,
+				`Bad Request ${error.message}`,
+				null
+			);
+		}
+	},
+	forgotPassword: async (req, res) => {
+		try {
+			const { email } = req.body;
+			const checkUser = await authModel.checkUserByEmail(email);
+			if (checkUser.length < 1) {
+				return helperWrapper.response(
+					res,
+					400,
+					`User With Email : ${email} Not Found`
+				);
+			}
+			const data = { email: checkUser[0].email, id: checkUser[0].id };
+			const token = jwt.sign(data, process.env.jwtKey, {
+				expiresIn: process.env.jwt_expire,
+			});
 
-      const setDataEmail = {
-        to: email,
-        subject: "Forgot Password",
-        template: "email-verification",
-        data: {
-          link: `${process.env.URL_FRONTEND}/auth/reset-password/${token}`,
-        },
-      };
-      sendMail(setDataEmail);
+			const setDataEmail = {
+				to: email,
+				subject: "Forgot Password",
+				template: "email-verification",
+				data: {
+					link: `${process.env.URL_FRONTEND}/auth/reset-password/${token}`,
+				},
+			};
+			sendMail(setDataEmail);
 
-      return helperWrapper.response(
-        res,
-        200,
-        "Success Forgot Password, Check Your Email",
-        null
-      );
-    } catch (error) {
-      return helperWrapper.response(
-        res,
-        400,
-        `Bad Request ${error.message}`,
-        null
-      );
-    }
-  },
-  forgotPasswordUpdate: async (req, res) => {
-    try {
-      const { email, id } = req.decodeToken;
-      const { newPassword, confirmPassword } = req.body;
-      if (newPassword !== confirmPassword) {
-        return helperWrapper.response(res, 400, `Password Not Same`);
-      }
-      if (newPassword.length < 8) {
-        return helperWrapper.response(
-          res,
-          400,
-          `Minimum Password is 8 Character`
-        );
-      }
-      const checkUser = await authModel.checkUserByEmail(email);
-      if (checkUser.length < 1) {
-        return helperWrapper.response(
-          res,
-          400,
-          `User With Email : ${email} Not Found`
-        );
-      }
+			return helperWrapper.response(
+				res,
+				200,
+				"Success Forgot Password, Check Your Email",
+				null
+			);
+		} catch (error) {
+			return helperWrapper.response(
+				res,
+				400,
+				`Bad Request ${error.message}`,
+				null
+			);
+		}
+	},
+	forgotPasswordUpdate: async (req, res) => {
+		try {
+			const { email, id } = req.decodeToken;
+			const { newPassword, confirmPassword } = req.body;
+			if (newPassword !== confirmPassword) {
+				return helperWrapper.response(res, 400, `Password Not Same`);
+			}
+			if (newPassword.length < 8) {
+				return helperWrapper.response(
+					res,
+					400,
+					`Minimum Password is 8 Character`
+				);
+			}
+			const checkUser = await authModel.checkUserByEmail(email);
+			if (checkUser.length < 1) {
+				return helperWrapper.response(
+					res,
+					400,
+					`User With Email : ${email} Not Found`
+				);
+			}
 
-      const setPostData = {
-        isActive: 1,
-        password: await bcrypt.hash(newPassword, 10),
-      };
-      let result = await authModel.updatedUser(setPostData, id);
+			const setPostData = {
+				isActive: 1,
+				password: await bcrypt.hash(newPassword, 10),
+			};
+			let result = await authModel.updatedUser(setPostData, id);
 
-      return helperWrapper.response(
-        res,
-        200,
-        "Success Update Passowrd, Login Now",
-        result
-      );
-    } catch (error) {
-      return helperWrapper.response(
-        res,
-        400,
-        `Bad Request ${error.message}`,
-        null
-      );
-    }
-  },
-  refreshToken: async (req, res) => {
-    try {
-      // console.log(req.body);
-      const { refreshToken } = req.body;
-      // PROSES PENGECEKAN REFRESH TOKEN APAKAH BISA DIGUNAKAN ATAU TIDAK
-      redis.get(`refreshToken:${refreshToken}`, (error, result) => {
-        if (!error && result !== null) {
-          return helperWrapper.response(
-            res,
-            403,
-            "Your refresh token cannot be use"
-          );
-        }
-        jwt.verify(refreshToken, process.env.jwtKey, (error, result) => {
-          if (error) {
-            return helperWrapper.response(res, 403, error.message);
-          }
-          delete result.iat;
-          delete result.exp;
-          const token = jwt.sign(result, process.env.jwtKey, {
-            expiresIn: "1h",
-          });
-          const newRefreshToken = jwt.sign(result, process.env.jwtKey, {
-            expiresIn: "24h",
-          });
-          redis.setex(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
-          return helperWrapper.response(res, 200, "Success Refresh Token !", {
-            id: result.id,
-            token,
-            refreshToken: newRefreshToken,
-          });
-        });
-      });
-    } catch (error) {
-      return helperWrapper.response(
-        res,
-        400,
-        `Bad request (${error.message})`,
-        null
-      );
-    }
-  },
-  logout: async (req, res) => {
-    try {
-      let token = req.headers.authorization;
-      if (token) {
-        token = token.split(" "[1]);
-        redis.del(`accesToken${token}`);
-      }
-      return helperWrapper.response(res, 200, "Success Logout", null);
-    } catch (error) {
-      return helperWrapper.response(
-        res,
-        400,
-        `Bad Request ${error.message}`,
-        null
-      );
-    }
-  },
+			return helperWrapper.response(
+				res,
+				200,
+				"Success Update Passowrd, Login Now",
+				result
+			);
+		} catch (error) {
+			return helperWrapper.response(
+				res,
+				400,
+				`Bad Request ${error.message}`,
+				null
+			);
+		}
+	},
+	refreshToken: async (req, res) => {
+		try {
+			let token = req.headers.authorization;
+			const { refreshToken } = req.body;
+			// PROSES PENGECEKAN REFRESH TOKEN APAKAH BISA DIGUNAKAN ATAU TIDAK
+			redis.get(`refreshToken:${refreshToken}`, (error, result) => {
+				if (!error && result !== null) {
+					return helperWrapper.response(
+						res,
+						403,
+						"Your refresh token cannot be use"
+					);
+				}
+				jwt.verify(refreshToken, process.env.jwtKey, (error, result) => {
+					if (error) {
+						return helperWrapper.response(res, 403, error.message);
+					}
+					delete result.iat;
+					delete result.exp;
+					const token = jwt.sign(result, process.env.jwtKey, {
+						expiresIn: "1h",
+					});
+					const newRefreshToken = jwt.sign(result, process.env.jwtKey, {
+						expiresIn: "24h",
+					});
+
+					redis.setex(`accessToken:${token}`, 3600 * 24, token);
+					redis.setex(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
+					return helperWrapper.response(res, 200, "Success Refresh Token !", {
+						id: result.id,
+						token,
+						refreshToken: newRefreshToken,
+					});
+				});
+			});
+		} catch (error) {
+			return helperWrapper.response(
+				res,
+				400,
+				`Bad request (${error.message})`,
+				null
+			);
+		}
+	},
+	logout: async (req, res) => {
+		try {
+			let token = req.headers.authorization;
+			if (token) {
+				token = token.split(" "[1]);
+				redis.del(`accesToken${token}`);
+			}
+			return helperWrapper.response(res, 200, "Success Logout", null);
+		} catch (error) {
+			return helperWrapper.response(
+				res,
+				400,
+				`Bad Request ${error.message}`,
+				null
+			);
+		}
+	},
 };
