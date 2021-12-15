@@ -1,5 +1,5 @@
 const redis = require("redis");
-require("dotenv").config;
+require("dotenv").config();
 
 console.log("HAIIIIII", process.env.RDS_hostname);
 const client = redis.createClient({
