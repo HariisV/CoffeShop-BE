@@ -150,6 +150,20 @@ module.exports = {
 			);
 			console.log(pp.sql);
 		}),
+	updateStatusTransaction: (status, id) =>
+		new Promise((resolve, reject) => {
+			const query = connection.query(
+				`UPDATE transaction_detail SET statusTransaction = '${status.status}' WHERE id = '${status.id}'`,
+				(error, results) => {
+					if (!error) {
+						resolve(null);
+					} else {
+						reject(new Error(`Message : ${error.message}`));
+					}
+				}
+			);
+			console.log(query.sql);
+		}),
 	deleteTransactionDetail: (id) =>
 		new Promise((resolve, reject) => {
 			const pp = connection.query(
