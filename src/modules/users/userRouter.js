@@ -6,24 +6,24 @@ const authMiddleware = require("../../middleware/auth");
 
 Router.get("/:id", userController.getUserById);
 Router.patch(
-  "/update",
-  authMiddleware.authentication,
-  userController.updateProfile
+	"/update",
+	authMiddleware.authentication,
+	userController.updateProfile
 );
 Router.patch(
-  "/update/password",
-  authMiddleware.authentication,
-  userController.updatePassword
+	"/update/password",
+	authMiddleware.authentication,
+	userController.updatePassword
 );
 Router.patch(
-  "/update/image",
-  authMiddleware.authentication,
-  userMiddleware,
-  userController.updateImage
+	"/update/image",
+	userMiddleware,
+	authMiddleware.authentication,
+	userController.updateImage
 );
 Router.patch(
-  "/image/delete",
-  authMiddleware.authentication,
-  userController.deleteImage
+	"/image/delete",
+	authMiddleware.authentication,
+	userController.deleteImage
 );
 module.exports = Router;
