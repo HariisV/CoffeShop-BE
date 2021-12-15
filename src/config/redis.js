@@ -1,10 +1,10 @@
 const redis = require("redis");
-require("dotenv").config
+require("dotenv").config;
 
 const client = redis.createClient({
-  host : process.env.redis_hostname,
-  port : process.env.redis_port,
-  password : process.env.redis_password
+  host: process.env.RDS_hostname,
+  port: process.env.RDS_port,
+  password: process.env.RDS_password,
 });
 
 client.on("connect", () => {
