@@ -50,13 +50,13 @@ Tuntutan masyarakat yang menginginkan kemudahan dalam setiap aktivitas online, o
 - [Json Web Token](https://www.npmjs.com/package/jsonwebtoken)
 - [Postman API testing](https://www.postman.com/api-documentation-tool/)
 
-## Daftar Anggota
+### Daftar Anggota
 
-- [Haris Wahyudi](https://github.com/HariisV)
-- [Rino Satya Putra](https://github.com/riyaraa)
-- [Wafi Pandega](https://github.com/wafidega)
-- [Moh. Syahrul Aziz Imastara](https://github.com/AzizImastara)
-- [Andreas Kurniawan](https://github.com/AndreasCKurniawan)
+- [Haris Wahyudi](https://github.com/HariisV) ( Fullstack )
+- [Rino Satya Putra](https://github.com/riyaraa) ( Fullstack )
+- [Wafi Pandega](https://github.com/wafidega) ( Frontend )
+- [Moh. Syahrul Aziz Imastara](https://github.com/AzizImastara) ( Frontend )
+- [Andreas Kurniawan](https://github.com/AndreasCKurniawan) ( Fullstack )
 
 ## License
 
